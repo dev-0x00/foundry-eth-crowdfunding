@@ -14,15 +14,15 @@ contract CrowdFund{
     // minimum of 90USD is required
     uint256 public constant MIN_USD = 90e18;
 
-    // List and store the funders
-    address[] public funders;
+    // List and store the s_funders
+    address[] public s_funders;
 
     //owner address
     address public immutable I_OWNER;
     AggregatorV3Interface public s_priceFeed;
 
-    //map the funders to the amount they fund us
-    mapping (address funder => uint256 amount) public addressToAmount;
+    //map the s_funders to the amount they fund us
+    mapping (address funder => uint256 amount) public s_addressToAmount;
 
     //set the owner
     constructor(address priceFeed) {
@@ -33,8 +33,8 @@ contract CrowdFund{
     // this function should allow users to send funds to our contract
     function sendFunds() public payable {
         if (msg.value.getConversionRate(s_priceFeed) < MIN_USD){revert Require91UsdOrMore();}
-        addressToAmount[msg.sender] += msg.value;
-        funders.push(msg.sender);
+        s_addressToAmount[msg.sender] += msg.value;
+        s_funders.push(msg.sender);
     }
 
     function withdrawFunds() public onlyOwner {

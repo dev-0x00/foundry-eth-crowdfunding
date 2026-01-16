@@ -7,9 +7,12 @@ import {Vm} from "forge-std/Vm.sol";
 import {DeployCrowdFund} from "../script/DeployCrowdFund.s.sol";
 
 contract TestCrowdFund is Test {
-    CrowdFund public crowdFund;
-    address public constant TEST_FUNDER = address(1);
-    address public constant TEST_OWNER = address(2);
+    CrowdFund crowdFund;
+    address  TEST_FUNDER = makeAddr("funder1");
+    address  TEST_OWNER = makeAddr("owner1");
+
+    uint256 public constant STARTING_BALANCE = 10 ether;
+    uint256 public constant SEND_AMOUNT = 0.01 ether;
     
 
     function setUp() public {
@@ -19,9 +22,10 @@ contract TestCrowdFund is Test {
 
     function testMinimumUsdRequirement() public {
         vm.prank(TEST_FUNDER);
+        vm.deal(TEST_FUNDER, STARTING_BALANCE);
         vm.expectRevert("Require91UsdOrMore()");
         // Sending 0.01 ETH which is less than $90
-        crowdFund.sendFunds{value: 1e10}(); 
+        crowdFund.sendFunds(); 
     }
 
 
