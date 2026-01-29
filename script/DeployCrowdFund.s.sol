@@ -5,8 +5,8 @@ import {CrowdFund} from "../src/CrowdFund.sol";
 import {Script} from "forge-std/Script.sol";
 import {HelperSol} from "./Helper.s.sol";
 
-contract DeployCrowdFund is Script{
-    function run() public returns (CrowdFund){
+contract DeployCrowdFund is Script {
+    function run() public returns (CrowdFund) {
         HelperSol helper = new HelperSol();
         address ethUsdPriceFeed = helper.activeNetworkConfig();
         vm.startBroadcast();
