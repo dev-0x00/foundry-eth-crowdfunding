@@ -26,4 +26,44 @@ contract TestCrowdFund is Test {
         // Sending 0.01 ETH which is less than $90
         crowdFund.sendFunds{value: SEND_AMOUNT}();
     }
+
+    function sendRequiredFunds() public {
+        vm.prank(TEST_FUNDER);
+        vm.deal(TEST_FUNDER, STARTING_BALANCE);
+        // Sending 1 ETH which is more than $90
+        crowdFund.sendFunds{value: 1 ether}();
+        uint256 fundedAmount = crowdFund.s_addressToAmount(TEST_FUNDER);
+        assertEq(fundedAmount, 1 ether);
+    }
+
+    function testOnlyOwnerCanWithdraw() public {
+        vm.prank(TEST_FUNDER);
+        vm.deal(TEST_FUNDER, STARTING_BALANCE);
+        vm.expectRevert("NotOwner()");
+        crowdFund.withdrawFunds();
+    }
+
+    function testOwnerCanWithdraw() public {
+        sendRequiredFunds();
+        address ownerAddr = crowdFund.owner();
+        vm.prank(ownerAddr);
+        uint256 initialOwnerBalance = ownerAddr.balance;
+        crowdFund.withdrawFunds();
+        uint256 finalOwnerBalance = ownerAddr.balance;
+        assert(finalOwnerBalance > initialOwnerBalance);
+    }
+
+    function testUsersAreAddedToFundersList() public {
+        for(int i = 0; i < 3; i++) {
+            address funder = makeAddr(string(abi.encodePacked("funder", vm.toString(i))));
+            vm.prank(funder);
+            vm.deal(funder, STARTING_BALANCE);
+            crowdFund.sendFunds{value: 1 ether}();
+        }
+        for(int i = 0; i < 3; i++) {
+            address funder = makeAddr(string(abi.encodePacked("funder", vm.toString(i))));
+            address recordedFunder = crowdFund.s_funders(uint256(i));
+            assertEq(funder, recordedFunder);
+        }
+    }
 }

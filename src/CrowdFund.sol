@@ -29,6 +29,10 @@ contract CrowdFund {
         s_priceFeed = AggregatorV3Interface(priceFeed);
     }
 
+    function owner() public view returns (address) {
+        return I_OWNER;
+    }
+
     // this function should allow users to send funds to our contract
     function sendFunds() public payable {
         if (msg.value.getConversionRate(s_priceFeed) < MIN_USD) revert Require91UsdOrMore();
